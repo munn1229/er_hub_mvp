@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+mysql-connector-python
+sqlalchemy
+alembic
+pymysql
+cryptography
+aiomysql

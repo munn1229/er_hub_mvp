@@ -1,0 +1,2 @@
+@yield('js')
+@vite($ts)
