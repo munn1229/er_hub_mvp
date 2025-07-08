@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.dialects.mysql import BIGINT
 from .base import Base
 
 class RoleHasPermission(Base):

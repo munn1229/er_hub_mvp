@@ -1,9 +1,10 @@
 <x-app-layout>
     <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">プロジェクト作成</h1>
-        <form action="{{ route('projects.store') }}" method="POST" class="space-y-6">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">ER作成</h1>
+        <form action="{{ route('er_diagrams.store') }}" method="POST" class="space-y-6">
             @csrf
             <div>
+                <input type="hidden" name="project_id" value="{{ $projectId }}">
                 <label for="name" class="block text-sm font-medium text-gray-700">
                     名称
                 </label>
@@ -13,7 +14,7 @@
                     id="name"
                     value="{{ old('name') }}"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-opacity-50"
-                    placeholder="プロジェクト名"
+                    placeholder="ER名"
                     required
                 >
                 @error('name')

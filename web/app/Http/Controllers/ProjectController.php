@@ -8,8 +8,12 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        $projects = \ApiClient::get('projects');
         return view(
-            'projects.index'
+            'projects.index',
+            [
+                'projects' => $projects,
+            ]
         );
     }
 
@@ -22,7 +26,12 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
-        $project = \ApiClient::post('projects', $request->only(['name']));
+        $project = \ApiClient::post('projects', array_merge(
+            $request->only(['name']),
+            [
+                'user_id' => auth()->user()->id,
+            ]
+        ));
         return redirect(route('projects.er_diagrams.index', $project['id']));
     }
 }

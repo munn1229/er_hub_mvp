@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.dialects.mysql import VARCHAR
 from .base import Base
 
 class PasswordResetToken(Base):

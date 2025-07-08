@@ -28,11 +28,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::prefix('/projects')->as('projects.')->group(function() {
+        Route::resource('/', ProjectController::class)->only('create');
+        Route::resource('{projectId}/er_diagrams', ErDiagramController::class)->only('create');
+    });
 });
 
 Route::prefix('/projects')->as('projects.')->group(function() {
-    Route::resource('/', ProjectController::class)->only('index', 'create');
-    Route::resource('{projectId}/er_diagrams', ErDiagramController::class)->only('index');
+    Route::resource('/', ProjectController::class)->only('index');
+    Route::resource('{projectId}/er_diagrams', ErDiagramController::class)->only('index', 'show');
 });
 
 require __DIR__.'/auth.php';

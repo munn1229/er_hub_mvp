@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy.dialects.mysql import VARCHAR, CHAR, TIMESTAMP as MySQL_TIMESTAMP
 from .base import Base
 
 class User(Base):
@@ -18,4 +19,3 @@ class User(Base):
     email_verified_at = Column(MySQL_TIMESTAMP(), nullable=True)
     password = Column(VARCHAR(255, collation='utf8mb4_unicode_ci'), nullable=False)
     remember_token = Column(VARCHAR(100, collation='utf8mb4_unicode_ci'), nullable=True)
-    

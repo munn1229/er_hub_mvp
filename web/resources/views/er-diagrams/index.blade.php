@@ -2,10 +2,10 @@
     <div>
         <div class="flex justify-between mb-4">
             <div>
-                <h1 class="text-2xl font-bold">プロジェクト一覧</h1>
+                <h1 class="text-2xl font-bold">ER一覧</h1>
             </div>
             @auth
-                <x-link-button :to="route('projects.create')">新規作成</x-link-button>
+                <x-link-button :to="route('projects.er_diagrams.create', $projectId)">新規作成</x-link-button>
             @endauth
         </div>
 
@@ -17,17 +17,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($projects as $project)
+                    @forelse ($erDiagrams as $erDiagram)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-2 border-b">
-                                <a href="{{ route('projects.er_diagrams.index', $project['id']) }}" class="text-blue-600 hover:underline">
-                                    {{ $project['name'] }}
+                                <a href="{{ route('projects.er_diagrams.show', ['projectId' => $projectId, 'er_diagram' => $erDiagram['id']]) }}" class="text-blue-600 hover:underline">
+                                    {{ $erDiagram['name'] }}
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td class="px-4 py-2 border-b text-gray-500">プロジェクトが存在しません</td>
+                            <td class="px-4 py-2 border-b text-gray-500">ER図が存在しません</td>
                         </tr>
                     @endforelse
                 </tbody>

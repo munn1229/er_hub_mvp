@@ -10,8 +10,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from models.base import Base
 from models.project import Project
+from models.er_diagram import ErDiagram
 from models.model_has_permission import ModelHasPermission
-from models.model_as_role import ModelHasRole
+from models.model_has_role import ModelHasRole
 from models.password_reset_token import PasswordResetToken
 from models.permission import Permission
 from models.personal_access_token import PersonalAccessToken

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Index
+from sqlalchemy.dialects.mysql import BIGINT, VARCHAR, TEXT, TIMESTAMP as MySQL_TIMESTAMP
 from .base import Base
 
 class PersonalAccessToken(Base):

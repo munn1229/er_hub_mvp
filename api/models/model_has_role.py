@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Index, ForeignKey
+from sqlalchemy.dialects.mysql import BIGINT, VARCHAR
 from .base import Base
 
 class ModelHasRole(Base):
