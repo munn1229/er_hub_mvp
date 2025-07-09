@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
 
 Route::prefix('/projects')->as('projects.')->group(function() {
     Route::resource('/', ProjectController::class)->only('index');
-    Route::resource('{projectId}/er_diagrams', ErDiagramController::class)->only('index', 'show');
+    Route::resource('{projectId}/er_diagrams', ErDiagramController::class)->only('index', 'show', 'edit');
 });
 
 require __DIR__.'/auth.php';

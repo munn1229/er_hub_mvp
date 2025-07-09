@@ -10,8 +10,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/ts/app.ts',
-                ...fg.sync('resources/ts/pages/**/*.ts'),
+                'resources/js/editor.ts',
             ],
             refresh: true,
         }),

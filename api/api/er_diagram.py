@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Path
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -27,6 +27,20 @@ async def index(
     result = await db.execute(query)
     er_diagrams = result.scalars().all()
     return er_diagrams
+
+@router.get("/er_diagrams/{id}", response_model=ErDiagramOut)
+async def show(
+    id: int = Path(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        result = await db.execute(select(ErDiagram).where(ErDiagram.id == id))
+        er_diagram = result.scalar_one_or_none()
+        if er_diagram is None:
+            raise HTTPException(status_code=404, detail="ER図が見つかりません")
+        return er_diagram
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="ER図の取得中にエラーが発生しました。")
 
 @router.post("/er_diagrams")
 async def store(payload: ErDiagramIn, db: Session = Depends(get_db)):

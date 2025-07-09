@@ -22,7 +22,21 @@ class ErDiagramController extends Controller
 
     public function show($projectId, $er_diagram)
     {
-        return $er_diagram;
+        $erDiagram = \ApiClient::get('er_diagrams/'.$er_diagram);
+        return view(
+            'er-diagrams.show',
+            [
+                'projectId' => $projectId,
+                'erDiagram' => $erDiagram,
+            ]
+        );
+    }
+
+    public function edit($projectId, $er_diagram)
+    {
+        return view(
+            'er-diagrams.edit'
+        );
     }
 
     public function create($projectId)
