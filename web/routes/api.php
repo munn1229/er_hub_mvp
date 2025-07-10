@@ -22,5 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('projects', ProjectController::class)->only('store');
-    Route::apiResource('er_diagrams', ErDiagramController::class)->only('store');
+    Route::apiResource('er_diagrams', ErDiagramController::class)->only('store', 'update');
 });

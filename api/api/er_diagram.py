@@ -2,13 +2,14 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Path
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from db import get_db
 from models.er_diagram import ErDiagram
 from models.branch import Branch
 from models.commit import Commit
-from schemas import ErDiagramIn, ErDiagramOut
+from schemas import ErDiagramIn, ErDiagramOut, ErDiagramCommitIn
 from services.er_diagram import store as er_diagram_store
+from services.er_diagram import update as er_diagram_update
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ async def index(
     name: str | None = Query(default=None),
     db: Session = Depends(get_db)
 ):
-    query = select(ErDiagram)
+    query = select(ErDiagram).options(selectinload(ErDiagram.branches).selectinload(Branch.commits))
 
     if project_id is not None:
         query = query.where(ErDiagram.project_id == project_id)
@@ -34,15 +35,20 @@ async def show(
     db: Session = Depends(get_db)
 ):
     try:
-        result = await db.execute(select(ErDiagram).where(ErDiagram.id == id))
+        result = await db.execute(select(ErDiagram).options(selectinload(ErDiagram.branches).selectinload(Branch.commits)).where(ErDiagram.id == id))
         er_diagram = result.scalar_one_or_none()
         if er_diagram is None:
             raise HTTPException(status_code=404, detail="ER図が見つかりません")
         return er_diagram
     except SQLAlchemyError as e:
+        print(e._message)
         raise HTTPException(status_code=500, detail="ER図の取得中にエラーが発生しました。")
 
 @router.post("/er_diagrams")
 async def store(payload: ErDiagramIn, db: Session = Depends(get_db)):
     return await er_diagram_store(payload, db)
+
+@router.patch("/er_diagrams/{id}")
+async def update(payload: ErDiagramCommitIn, id: int = Path(...), db: Session = Depends(get_db)):
+    return await er_diagram_update(id, payload, db)
 

@@ -1,1 +1,1 @@
-from .er_diagram import ErDiagramIn, ErDiagramOut
+from .er_diagram import ErDiagramIn, ErDiagramOut, ErDiagramCommitIn

@@ -5,7 +5,7 @@
             <div class="space-y-2">
                 <button
                     class="w-full bg-white border rounded py-2 text-left hover:bg-gray-200 disabled:opacity-50"
-                    disabled
+                    @click="addTable"
                 >
                     + Table
                 </button>
@@ -14,8 +14,10 @@
                 <button
                     id="commit-btn"
                     class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                    :disabled="isSaving || isLoading"
+                    @click="save"
                 >
-                    Commit
+                    {{ isSaving ? 'Saving...' : 'Commit' }}
                 </button>
             </div>
         </aside>
@@ -32,8 +34,24 @@
             <div
                 class="absolute top-0 left-0 grid-background"
                 :style="canvasStyle">
-                <div class="w-full h-full flex items-center justify-center text-gray-400">
-                    Canvas Area (coming soon)
+                <div
+                    v-for="table in tables"
+                    :key="table.id"
+                    class="absolute bg-white border shadow w-32"
+                    :style="{
+                        top: `${table.y}px`,
+                        left: `${table.x}px`
+                    }"
+                >
+                    <div class="px-2 py-1 border-b">
+                        <input
+                            v-model="table.name"
+                            type="text"
+                            class="w-full text-sm font-semibold outline-none"
+                            placeholder="Table name"
+                        />
+                    </div>
+                    <div class="p-2 text-xs text-gray-500">Columns / Indexes...</div>
                 </div>
             </div>
         </div>
@@ -42,6 +60,9 @@
 
 <script lang="ts" setup>
     import { ref, reactive, computed } from 'vue'
+    import axios from 'axios'
+
+    const isSaving = ref(false)
 
     const container = ref<HTMLElement | null>(null)
 
@@ -53,6 +74,60 @@
         startX: 0,
         startY: 0,
     })
+
+    interface Table {
+        id: number
+        name: string
+        x: number
+        y: number
+    }
+
+    interface ErPayload {
+        tables?: Table[]
+    }
+
+    interface Props { 
+        erDiagramId: number
+        er: ErPayload
+    }
+    const props = defineProps<Props>()
+
+    const tables = reactive<Table[]>(
+        props.er.tables ? [...props.er.tables] : []
+    )
+
+    let nextTableId = tables.length + 1
+    function addTable() {
+        tables.push({
+            id: nextTableId++,
+            name: '',
+            x: (container.value?.clientWidth ?? 0) / 2 - 64,
+            y: (container.value?.clientHeight ?? 0) / 2 - 24,
+        })
+    }
+
+    async function save() {
+        if (isSaving.value) return
+        isSaving.value = true
+        try {
+            const payload = {
+                er_body: JSON.stringify({ tables }),
+            }
+            const res = await axios.patch(
+                `/api/er_diagrams/${props.erDiagramId}`,
+                payload
+            )
+            if (!res.data.success) {
+                throw new Error(res.data.message || 'Save failed')
+            }
+            alert('Saved')
+        } catch (e: any) {
+            console.error(e)
+            alert('Error: ' + (e.message || 'Unknown'))
+        } finally {
+            isSaving.value = false
+        }
+    }
 
     function onWheel(e: WheelEvent) {
         if (!container.value) return

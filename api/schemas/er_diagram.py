@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any
+from .branch import BranchOut
 
 class ErDiagramIn(BaseModel):
     user_id: str = Field(
@@ -15,6 +17,10 @@ class ErDiagramIn(BaseModel):
 class ErDiagramOut(BaseModel):
     id: int
     name: str
+    master_branch: Optional[BranchOut]
 
     class Config:
         orm_mode = True
+
+class ErDiagramCommitIn(BaseModel):
+    er_body: str

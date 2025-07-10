@@ -34,8 +34,14 @@ class ErDiagramController extends Controller
 
     public function edit($projectId, $er_diagram)
     {
+        $erDiagram = \ApiClient::get('er_diagrams/'.$er_diagram);
+        $er = json_decode($erDiagram['master_branch']['latest_commit']['body'], true);
         return view(
-            'er-diagrams.edit'
+            'er-diagrams.edit',
+            [
+                'erDiagram' => $erDiagram,
+                'er'        => $er,
+            ]
         );
     }
 
@@ -61,5 +67,13 @@ class ErDiagramController extends Controller
             'projectId'  => $request->project_id,
             'er_diagram' => $erDiagram['id']
         ]));
+    }
+
+    public function update($id, Request $request)
+    {
+        \Log::debug($request);
+        $erDiagram = \ApiClient::patch('er_diagrams/'.$id, $request->only('er_body'));
+
+        return response()->json($erDiagram);
     }
 }

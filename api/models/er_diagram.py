@@ -10,4 +10,7 @@ class ErDiagram(Base):
     user_id = Column(CHAR(36, collation='utf8mb4_unicode_ci'), ForeignKey("users.id"), index=True, nullable=False)
 
     name = Column(String(20), index=True, nullable=False)
-    
+
+    @property
+    def master_branch(self):
+        return next((branch for branch in self.branches if branch.name == "master"), None)

@@ -10,4 +10,10 @@ class Branch(Base):
     user_id = Column(CHAR(36, collation='utf8mb4_unicode_ci'), ForeignKey("users.id"), index=True, nullable=False)
 
     name = Column(String(20), index=True, nullable=False)
+
+    @property
+    def latest_commit(self):
+        if self.commits:
+            return max(self.commits, key=lambda c: c.updated_at)
+        return None
     

@@ -47,9 +47,9 @@ class ApiClientService
         return $this->apiCall($url, 'POST', ['json' => $data]);
     }
 
-    public function put(string $url, array $data = []): array
+    public function patch(string $url, array $data = []): array
     {
-        return $this->apiCall($url, 'PUT', ['json' => $data]);
+        return $this->apiCall($url, 'PATCH', ['json' => $data]);
     }
 
     public function delete(string $url, array $query = []): array
