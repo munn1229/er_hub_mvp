@@ -14,7 +14,7 @@
                 <button
                     id="commit-btn"
                     class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                    :disabled="isSaving || isLoading"
+                    :disabled="isSaving"
                     @click="save"
                 >
                     {{ isSaving ? 'Saving...' : 'Commit' }}
@@ -42,8 +42,9 @@
                         top: `${table.y}px`,
                         left: `${table.x}px`
                     }"
+                    @mousedown.stop="startDrag(table, $event)"
                 >
-                    <div class="px-2 py-1 border-b">
+                    <div class="px-2 py-1 border-b cursor-move">
                         <input
                             v-model="table.name"
                             type="text"
@@ -59,7 +60,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, reactive, computed } from 'vue'
+    import { ref, reactive, computed, onBeforeUnmount } from 'vue'
     import axios from 'axios'
 
     const isSaving = ref(false)
@@ -95,6 +96,14 @@
     const tables = reactive<Table[]>(
         props.er.tables ? [...props.er.tables] : []
     )
+
+    const dragState = reactive({
+        tableId: null as number | null,
+        startCanvasX: 0,
+        startCanvasY: 0,
+        x: 0,
+        y: 0,
+    })
 
     let nextTableId = tables.length + 1
     function addTable() {
@@ -167,17 +176,62 @@
         }
     }
 
+    function startDrag(table: Table, e: MouseEvent) {
+        const rect = container.value!.getBoundingClientRect()
+        const canvasX = (e.clientX - rect.left - state.offsetX) / state.scale
+        const canvasY = (e.clientY - rect.top - state.offsetY) / state.scale
+
+        dragState.tableId = table.id
+        dragState.startCanvasX = canvasX
+        dragState.startCanvasY = canvasY
+        dragState.x = table.x
+        dragState.y = table.y
+
+        document.addEventListener('mousemove', onTableDrag)
+        document.addEventListener('mouseup', onTableDrop)
+    }
+
+    function onTableDrag(e: MouseEvent) {
+        if (dragState.tableId === null) return
+        const rect = container.value.getBoundingClientRect()
+        const canvasX = (e.clientX - rect.left - state.offsetX) / state.scale
+        const canvasY = (e.clientY - rect.top - state.offsetY) / state.scale
+        const dx = canvasX - dragState.startCanvasX
+        const dy = canvasY - dragState.startCanvasY
+
+        const table = tables.find(t => t.id === dragState.tableId)
+        if (table) {
+            table.x = dragState.x + dx
+            table.y = dragState.y + dy
+        }
+    }
+
+    function onTableDrop() {
+        document.removeEventListener('mousemove', onTableDrag)
+        document.removeEventListener('mouseup', onTableDrop)
+        dragState.tableId = null
+    }
+
+    onBeforeUnmount(() => {
+        document.removeEventListener('mousemove', onTableDrag)
+        document.removeEventListener('mouseup', onTableDrop)
+    })
+
     const canvasStyle = computed(() => ({
         transform: `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`,
         transformOrigin: '0 0',
         width: '100%',
         height: '100%',
+        backgroundSize: `${20*state.scale}px ${20*state.scale}px, ${20*state.scale}px ${20*state.scale}px, ${100*state.scale}px ${100*state.scale}px, ${100*state.scale}px ${100*state.scale}px`,
     }))
 </script>
 
 <style scoped>
 .cursor-grab {
     cursor: grab;
+}
+.cursor-move {
+    cursor: move;
 }
 
 .grid-background {

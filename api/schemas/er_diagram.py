@@ -23,4 +23,4 @@ class ErDiagramOut(BaseModel):
         orm_mode = True
 
 class ErDiagramCommitIn(BaseModel):
-    er_body: str
+    er_body: dict
